@@ -51,7 +51,9 @@ public class UsuarioController {
     }
 
     @PutMapping("/atualizar")
-    public ResponseEntity<Usuario> Put(@Valid @RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioRepository.save(usuario));
+    public ResponseEntity<Usuario> putUsuario(@Valid @RequestBody Usuario usuario) {
+        return usuarioService.atualizarUsuario(usuario)
+                .map(resp -> ResponseEntity.status(HttpStatus.OK).body(resp))
+                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 }
