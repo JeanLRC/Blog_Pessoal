@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,23 +33,36 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Usuario>> getAll() {
+        return ResponseEntity.ok(usuarioRepository.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> getById(@PathVariable long id) {
+        return usuarioRepository.findById(id)
+                .map(resp -> ResponseEntity.ok(resp))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/usuario/{nome}")
+    public ResponseEntity<List<Usuario>> getByNome(@PathVariable String nome) {
+        return ResponseEntity.ok(usuarioRepository.findAllByNomeContainingIgnoreCase(nome));
+
+    }
+
     @PostMapping("/logar")
-    public ResponseEntity<UserLogin> Autentication(@RequestBody Optional<UserLogin> user) {
-        return usuarioService.Logar(user).map(resp -> ResponseEntity.ok(resp))
+    public ResponseEntity<UserLogin> authenticationUsuario(@Valid @RequestBody Optional<UserLogin> user) {
+        return usuarioService.logarUsuario(user)
+                .map(resp -> ResponseEntity.ok(resp))
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<Usuario> Post(@Valid @RequestBody Usuario usuario) {
-
+    public ResponseEntity<Usuario> postUsuario(@Valid @RequestBody Usuario usuario) {
         return usuarioService.cadastrarUsuario(usuario)
                 .map(resp -> ResponseEntity.status(HttpStatus.CREATED).body(resp))
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<Usuario>> GetAll() {
-        return ResponseEntity.ok(usuarioRepository.findAll());
     }
 
     @PutMapping("/atualizar")
@@ -55,5 +70,10 @@ public class UsuarioController {
         return usuarioService.atualizarUsuario(usuario)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK).body(resp))
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUsuario(@PathVariable long id) {
+        usuarioRepository.deleteById(id);
     }
 }
