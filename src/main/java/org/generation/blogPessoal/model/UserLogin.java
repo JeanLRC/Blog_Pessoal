@@ -14,6 +14,8 @@ public class UserLogin {
 
     private String token;
 
+    private String tipo;
+
     public long getId() {
         return id;
     }
@@ -28,6 +30,14 @@ public class UserLogin {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public String getUsuario() {
